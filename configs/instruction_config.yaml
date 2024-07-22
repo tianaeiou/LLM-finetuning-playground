@@ -1,7 +1,0 @@
-
-dataset:
-  caco2:
-    instructions: "Predict the Caco-2 cell effective permeability of the given drug"
-    context: "The human colon epithelial cancer cell line, Caco-2, is used as an in vitro model to simulate the human intestinal tissue. The experimental result on the rate of drug passing through the Caco-2 cells can approximate the rate at which the drug permeates through the human intestinal tissue."
-
-    question_prompt: "Please "
