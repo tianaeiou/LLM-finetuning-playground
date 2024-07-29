@@ -1,4 +1,14 @@
-# %%
+ALL_TASKS = ['caco2_wang', 'hia_hou', 'pgp_broccatelli', 'bioavailability_ma', 'lipophilicity_astrazeneca',
+             'solubility_aqsoldb', 'bbb_martins', 'ppbr_az', 'vdss_lombardo', 'cyp2d6_veith', 'cyp3a4_veith',
+             'cyp2c9_veith', 'cyp2d6_substrate_carbonmangels', 'cyp3a4_substrate_carbonmangels',
+             'cyp2c9_substrate_carbonmangels', 'half_life_obach', 'clearance_microsome_az', 'clearance_hepatocyte_az',
+             'herg', 'ames', 'dili', 'ld50_zhu']
+REGRESSION_TASKS = ['caco2_wang', 'lipophilicity_astrazeneca', 'solubility_aqsoldb', 'ppbr_az', 'vdss_lombardo',
+                    'half_life_obach', 'clearance_microsome_az', 'clearance_hepatocyte_az', 'ld50_zhu']
+CLASSIFICATION_TASKS = ['hia_hou', 'pgp_broccatelli', 'bioavailability_ma', 'bbb_martins', 'cyp2d6_veith',
+                        'cyp3a4_veith', 'cyp2c9_veith', 'cyp2d6_substrate_carbonmangels',
+                        'cyp3a4_substrate_carbonmangels', 'cyp2c9_substrate_carbonmangels', 'herg', 'ames', 'dili']
+
 SYSTEM_INSTRUCTION = "You are an AI assistant specializing in ADMET property prediction for drug discovery. The user may ask you to predict the absorption, distribution, metabolism, excretion, and toxicity (ADMET) properties of a molecule. You should provide insightful predictions and follow instructions based on your knowledge."
 
 INSTRUCTION = {
@@ -53,77 +63,75 @@ CONTEXT = {
 
 EXAMPLE_TEMPLATE = """```
 {{
-    "drug SMILES": CUR_DRUG_SMILES
+    "drug SMILES": {CUR_DRUG_SMILES}
     "answer": {CUR_ANSWER}
 }}
 ```
 """
 
-PROMPT_TEMPLATE_REG = """Context: CUR_CONTEXT_INFO
-Question: Given the drug SMILES string, predict the normalized CUR_TARGET from 0 to 1000, where 0 is the minimum CUR_TARGET and 1000 is the maximum.
+PROMPT_TEMPLATE_REG = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
 ```
-{
-    "drug SMILES": CUR_DRUG_SMILES
-}
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
-PROMPT_TEMPLATE_REG_WITH_EXAMPLE = """Context: CUR_CONTEXT_INFO
-Question: Given the drug SMILES string, predict the normalized CUR_TARGET from 0 to 1000, where 0 is the minimum CUR_TARGET and 1000 is the maximum.
+PROMPT_TEMPLATE_REG_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
 Examples:
-CUR_EXAMPLESNow, using the information provided, predict the CUR_TARGET for the following drug:
+{CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
 ```
-{
-    "drug SMILES": CUR_DRUG_SMILES
-}
-```
-IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
-"""
-PROMPT_TEMPLATE_CLS = """Context: CUR_CONTEXT_INFO
-Question: Given the drug SMILES string, determine CUR_TARGET. Classify the prediction as:
-- 0: LABEL0_DESCRIPTION
-- 1: LABEL1_DESCRIPTION
-```
-{
-    "drug SMILES": CUR_DRUG_SMILES
-}
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
-PROMPT_TEMPLATE_CLS_WITH_EXAMPLE = """Context: CUR_CONTEXT_INFO
-Question: Given the drug SMILES string, determine CUR_TARGET. Classify the prediction as:
-- 0: LABEL0_DESCRIPTION
-- 1: LABEL1_DESCRIPTION
+PROMPT_TEMPLATE_CLS = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, determine {CUR_TARGET}. Classify the prediction as:
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
+```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
+```
+IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+"""
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, determine {CUR_TARGET}. Classify the prediction as:
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
 Examples:
-CUR_EXAMPLESNow, using the information provided, predict the CUR_TARGET for the following drug:
+{CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
 ```
-{
-    "drug SMILES": CUR_DRUG_SMILES
-}
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
 
 EXAMPLE_TEMPLATE_TxLLM = """
-drug SMILES: CUR_DRUG_SMILES
+drug SMILES: {CUR_DRUG_SMILES}
 answer: {CUR_ANSWER}
 """
-PROMPT_TEMPLATE_CLS_TxLLM = """Context: CUR_CONTEXT_INFO
+PROMPT_TEMPLATE_CLS_TxLLM = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
-- 0: LABEL0_DESCRIPTION
-- 1: LABEL1_DESCRIPTION
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
 
-drug SMILES: CUR_DRUG_SMILES"""
-PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM = """Context: CUR_CONTEXT_INFO
+drug SMILES: {CUR_DRUG_SMILES}"""
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
-- 0: LABEL0_DESCRIPTION
-- 1: LABEL1_DESCRIPTION
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
 
-CUR_EXAMPLES
+{CUR_EXAMPLES}
 
-drug SMILES: CUR_DRUG_SMILES"""
-
-
+drug SMILES: {CUR_DRUG_SMILES}"""
 
 QUESTION = {
     "bbb_martins": {"target": "the likelihood of the compound penetrating the BBB",
