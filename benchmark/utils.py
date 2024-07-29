@@ -28,7 +28,7 @@ def normalize(value, min_value, max_value, min_output=0.0, max_output=1000.0):
     """
     normalized_value = (value - min_value) * (max_output - min_output) / (max_value - min_value) + min_output
     normalized_value = min(max_output, max(normalized_value, min_value))
-    return int(normalized_value)
+    return round(normalized_value, 2)
 
 
 def denormalize(normalized_value, min_value, max_value, min_output=0.0, max_output=1000.0):
@@ -76,9 +76,9 @@ def get_property_prompt(cur_drug_property_values, properties):
         property_prompt += PROPERTIES_TEMPLATES[property].format(value=cur_drug_property_values[property])
     return property_prompt
 
+
 def get_mae(pred, real):
     pred = torch.tensor(pred)
     real = torch.tensor(real)
     mae = torch.mean(torch.abs(real - pred))
     return {"mae": mae.item()}
-
