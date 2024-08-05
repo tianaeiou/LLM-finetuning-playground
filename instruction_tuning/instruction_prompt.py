@@ -114,8 +114,7 @@ Examples:
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
 
-EXAMPLE_TEMPLATE_TxLLM = """
-drug SMILES: {CUR_DRUG_SMILES}
+EXAMPLE_TEMPLATE_TxLLM = """drug SMILES: {CUR_DRUG_SMILES}
 answer: {CUR_ANSWER}
 """
 PROMPT_TEMPLATE_CLS_TxLLM = """Context: {CUR_CONTEXT_INFO}
@@ -123,15 +122,16 @@ Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}
 - 1: {LABEL1_DESCRIPTION}
 
-drug SMILES: {CUR_DRUG_SMILES}"""
+drug SMILES: {CUR_DRUG_SMILES}
+answer: """
 PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}
 - 1: {LABEL1_DESCRIPTION}
 
-{CUR_EXAMPLES}
-
-drug SMILES: {CUR_DRUG_SMILES}"""
+{CUR_EXAMPLES}Now, using the information provided, predict the result for the following drug. IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+drug SMILES: {CUR_DRUG_SMILES}
+"""
 
 QUESTION = {
     "bbb_martins": {"target": "the likelihood of the compound penetrating the BBB",
