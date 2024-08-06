@@ -57,10 +57,10 @@ def calculate_similarity(data_df, ref_df, file_dir, N=10):
     result = {"smiles": smiles_list_test, "neighbor_index": nearest_neighbors}
 
     # Save to file_dir
+    os.makedirs(os.path.dirname(file_dir), exist_ok=True)
     with open(file_dir, 'wb') as f:
         pickle.dump(result, f)
     return result
-
 
 def get_property_description(mol, digit=3):
     """Generate a description of the molecular properties for a given RDKit molecule.
@@ -239,7 +239,7 @@ def process_dataset(data_df, ref_df, dataset_name, neighbor_info_dir, k, use_hyb
 
     :param data_df: DataFrame containing the test data.
     :param ref_df: DataFrame containing the reference data.
-    :param dataset_name: Name of the dataset.
+    :param dataset_name: Name of the SFT_dataset.
     :param neighbor_info_dir: Path to Neighbor info file.
     :param k: k=0 for zero-shot instruction strategy, k>0 for few-shot instruction strategy.
     :param use_hybrid: Boolean indicating if to use hybrid instruction strategy.
@@ -259,8 +259,7 @@ def process_dataset(data_df, ref_df, dataset_name, neighbor_info_dir, k, use_hyb
         min_value, max_value = 0, 1
         is_regression_task = False
 
-    with open(neighbor_info_dir, 'rb') as file:
-        neighbor_dict = pickle.load(file)
+    neighbor_dict = calculate_similarity(data_df, ref_df, neighbor_info_dir)
     if use_hybrid:
         prompts_list = generate_hybrid_instruction(data_df, ref_df, instruction_prompt, context_prompt, target_prompt,
                                                    neighbor_dict, min_value=min_value, max_value=max_value,
