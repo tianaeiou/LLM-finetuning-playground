@@ -68,6 +68,14 @@ EXAMPLE_TEMPLATE = """```
 }}
 ```
 """
+EXAMPLE_TEMPLATE_PROPERTY = """```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+{CUR_DRUG_PROPERTIES}
+    "answer": {CUR_ANSWER}
+}}
+```
+"""
 
 PROMPT_TEMPLATE_REG = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
@@ -85,6 +93,17 @@ Examples:
 ```
 {{
     "drug SMILES": {CUR_DRUG_SMILES}
+}}
+```
+IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+"""
+PROMPT_TEMPLATE_REG_WITH_EXAMPLE_PROPERTY = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
+Examples:
+{CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
+```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}{CUR_DRUG_PROPERTIES}
 }}
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
@@ -113,10 +132,27 @@ Examples:
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_PROPERTY = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, determine {CUR_TARGET}. Classify the prediction as:
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
+Examples:
+{CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
+```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}{CUR_DRUG_PROPERTIES}
+}}
+```
+IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+"""
 
 EXAMPLE_TEMPLATE_TxLLM = """drug SMILES: {CUR_DRUG_SMILES}
 answer: {CUR_ANSWER}
 """
+EXAMPLE_TEMPLATE_TxLLM_PROPERTY = """drug SMILES: {CUR_DRUG_SMILES}
+{CUR_DRUG_PROPERTIES}answer: {CUR_ANSWER}
+"""
+
 PROMPT_TEMPLATE_CLS_TxLLM = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}
@@ -132,6 +168,14 @@ Question: Given the drug SMILES string, predict whether it
 {CUR_EXAMPLES}Now, using the information provided, predict the result for the following drug. IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 drug SMILES: {CUR_DRUG_SMILES}
 """
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM_PROPERTY = """Context: {CUR_CONTEXT_INFO}
+Question: Given the drug SMILES string, predict whether it
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
+
+{CUR_EXAMPLES}Now, using the information provided, predict the result for the following drug. IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+drug SMILES: {CUR_DRUG_SMILES}
+{CUR_DRUG_PROPERTIES}"""
 
 QUESTION = {
     "bbb_martins": {"target": "the likelihood of the compound penetrating the BBB",
@@ -184,4 +228,18 @@ QUESTION = {
              "label0": "The drug cannot cause liver injury.",
              "label1": "The drug can cause liver injury."},
 
+}
+PROPERTIES_DICT = {"ruleof5": ["MW", "CLogP", "HBA", "HBD", "RB", "TPSA"]}
+PROPERTIES_TEMPLATES = {
+    "MW": """    MW: {value}\n""",
+    "CLogP": """    CLogP: {value}\n""",
+    "HBA": """    HBA: {value}\n""",
+    "HBD": """    HBD: {value}\n""",
+    "RB": """    RB: {value}\n""",
+    "TPSA": """    TPSA: {value}\n""",
+    "TPSA_NO": """    TPSA_NO: {value}\n""",
+    "RotBondCount": """    RotBondCount: {value}\n""",
+    "moka_ionState7.4": """    Ion State at pH 7.4: {value}\n""",
+    "MoKa.LogP": """    Logarithm of Octanol-water Partition Coefficient: {value}\n""",
+    "MoKa.LogD7.4": """    Logarithm of Distribution at pH 7.4: {value}\n"""
 }
