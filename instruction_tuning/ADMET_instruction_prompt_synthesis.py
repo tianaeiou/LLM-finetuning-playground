@@ -70,7 +70,7 @@ def get_property_description(mol, digit=3):
     :return: String of property description, which can be inserted in the prompt
     """
     if mol is None:
-        return {
+        property_dict =  {
             "MW": "undefined",
             "CLogP": "undefined",
             "HBD": "undefined",
@@ -78,14 +78,15 @@ def get_property_description(mol, digit=3):
             "RB": "undefined",
             "TPSA": "undefined"
         }
-    property_dict = {
-        "MW": round(Descriptors.MolWt(mol), digit),
-        "CLogP": round(Descriptors.MolLogP(mol), digit),
-        "HBD": Lipinski.NumHDonors(mol),
-        "HBA": Lipinski.NumHAcceptors(mol),
-        "RB": Lipinski.NumRotatableBonds(mol),
-        "TPSA": round(Descriptors.TPSA(mol), digit)
-    }
+    else:
+        property_dict = {
+            "MW": round(Descriptors.MolWt(mol), digit),
+            "CLogP": round(Descriptors.MolLogP(mol), digit),
+            "HBD": Lipinski.NumHDonors(mol),
+            "HBA": Lipinski.NumHAcceptors(mol),
+            "RB": Lipinski.NumRotatableBonds(mol),
+            "TPSA": round(Descriptors.TPSA(mol), digit)
+        }
     property_prompt = ""
     for property_name, property_value in property_dict.items():
         property_prompt += PROPERTIES_TEMPLATES[property_name].format(value=property_value)
