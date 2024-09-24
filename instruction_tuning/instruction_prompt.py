@@ -86,10 +86,20 @@ Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
-PROMPT_TEMPLATE_REG_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO}
+PROMPT_TEMPLATE_REG_WITH_EXAMPLE_v0 = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
 Examples:
 {CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
+```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
+```
+IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+"""
+PROMPT_TEMPLATE_REG_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO}. For a given drug SMILES string, we can predict the normalized {CUR_TARGET} from 0 to 1000, where 0 is the minimum {CUR_TARGET} and 1000 is the maximum.
+Here are some examples for you to study:
+{CUR_EXAMPLES}Question: predict the {CUR_TARGET} for the following drug:
 ```
 {{
     "drug SMILES": {CUR_DRUG_SMILES}
@@ -119,12 +129,24 @@ Question: Given the drug SMILES string, determine {CUR_TARGET}. Classify the pre
 ```
 IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 """
-PROMPT_TEMPLATE_CLS_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO}
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_v0 = """Context: {CUR_CONTEXT_INFO} 
 Question: Given the drug SMILES string, determine {CUR_TARGET}. Classify the prediction as:
 - 0: {LABEL0_DESCRIPTION}
 - 1: {LABEL1_DESCRIPTION}
 Examples:
 {CUR_EXAMPLES}Now, using the information provided, predict the {CUR_TARGET} for the following drug:
+```
+{{
+    "drug SMILES": {CUR_DRUG_SMILES}
+}}
+```
+IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
+"""
+PROMPT_TEMPLATE_CLS_WITH_EXAMPLE = """Context: {CUR_CONTEXT_INFO} Given the drug SMILES string, we can classify the {CUR_TARGET} as:
+- 0: {LABEL0_DESCRIPTION}
+- 1: {LABEL1_DESCRIPTION}
+Here are some examples for you to study:
+{CUR_EXAMPLES}Question: classify the {CUR_TARGET} for the following drug:
 ```
 {{
     "drug SMILES": {CUR_DRUG_SMILES}
@@ -158,8 +180,7 @@ Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}
 - 1: {LABEL1_DESCRIPTION}
 
-drug SMILES: {CUR_DRUG_SMILES}
-answer: """
+drug SMILES: {CUR_DRUG_SMILES}"""
 PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}
@@ -168,6 +189,7 @@ Question: Given the drug SMILES string, predict whether it
 {CUR_EXAMPLES}Now, using the information provided, predict the result for the following drug. IMPORTANT: Please provide your predicted value and DO NOT RETURN ANYTHING ELSE.
 drug SMILES: {CUR_DRUG_SMILES}
 """
+
 PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM_PROPERTY = """Context: {CUR_CONTEXT_INFO}
 Question: Given the drug SMILES string, predict whether it
 - 0: {LABEL0_DESCRIPTION}

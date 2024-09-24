@@ -134,7 +134,7 @@ def create_prompt_for_single_row(row, example_prompt, instruction_description, c
                                  reg_template_with_example=PROMPT_TEMPLATE_REG_WITH_EXAMPLE,
                                  reg_template_with_example_property=PROMPT_TEMPLATE_REG_WITH_EXAMPLE_PROPERTY,
                                  reg_template=PROMPT_TEMPLATE_REG,
-                                 cls_template_with_example=PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM,
+                                 cls_template_with_example=PROMPT_TEMPLATE_CLS_WITH_EXAMPLE,
                                  cls_template_with_example_property=PROMPT_TEMPLATE_CLS_WITH_EXAMPLE_TxLLM_PROPERTY,
                                  cls_template=PROMPT_TEMPLATE_CLS_TxLLM, use_property=False):
     """ Generate prompt for a single row
@@ -285,9 +285,9 @@ def process_dataset(data_df, ref_df, dataset_name, neighbor_info_dir, k, use_hyb
 """
 setting
 """
-k = 2  # 5
-mode = "test"  # mode = "train"  # only using train_val_df ["train", "test"]
-save_dir = f"{project_path}/instruction_tuning/test_instructions/cls_v1/5-shot"
+k = 5  # 5
+mode = "train"  # mode = "train"  # only using train_val_df ["train", "test"]
+save_dir = f"{project_path}/instruction_tuning/test_instructions/cls_0822/5-shot"
 use_hybrid = False
 use_property = False
 
@@ -318,7 +318,7 @@ for dataset in all_dataset:
 """
 prompts_all = []
 group = admet_group(path='data/')
-for dataset in CLASSIFICATION_TASKS:
+for dataset in REGRESSION_TASKS:
     benchmark = group.get(dataset)
     train_val_df, test_df = benchmark['train_val'], benchmark['test']
     if mode == "train":
@@ -333,11 +333,20 @@ for dataset in CLASSIFICATION_TASKS:
     prompts_list = process_dataset(data_df, ref_df, dataset, neighbor_info_dir, k=k, use_hybrid=use_hybrid,
                                    use_property=use_property)
     prompts_all.extend(prompts_list)
-    with open(f"{save_dir}/{file_name}", 'w') as json_file:
-        json.dump(prompts_list, json_file)
-    print(f"{save_dir}/{file_name}, Done!")
+    # with open(f"{save_dir}/{file_name}", 'w') as json_file:
+    #     json.dump(prompts_list, json_file)
+    # print(f"{save_dir}/{file_name}, Done!")
 
-# print(f"whole dataset length: {len(prompts_all)}")
-# with open(f"{project_path}/instruction_tuning/instructions/classification_all-1-shot_v1.json", 'w') as json_file:
-#     json.dump(prompts_all, json_file)
+print(f"whole dataset length: {len(prompts_all)}")
+
+
+with open(f"/home/wangtian/codeSpace/llm_platform/LLaMA-Factory/data/{len(prompts_all)}_instruction-{k}-shot-{mode}_all.json", 'w') as json_file:
+    json.dump(prompts_all, json_file)
 # print(prompts_list[0]["input"])
+#%%
+# 验证数据是否正确
+import json
+with open("/home/wangtian/codeSpace/llm_platform/LLaMA-Factory/data/23498_instruction-5-shot-train_all.json","r") as f:
+    # /home/wangtian/codeSpace/llm_platform/LLaMA-Factory/data/41932_instruction-5-shot-train_all.json
+    data_loaded =json.load(f)
+print(len(data_loaded))

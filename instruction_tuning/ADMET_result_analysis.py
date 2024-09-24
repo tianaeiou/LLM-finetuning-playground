@@ -95,9 +95,9 @@ print(ranking_dict)
 # %%
 """ 在这里算排名 v1"""
 
-from benchmark_record import TDC_ADMET_BENCHMARK_REG, TDC_ADMET_BENCHMARK_CLS, Tx_LLM_TDC_ADMET_result, \
-    result_best_ruleof5
-from instruction_prompt import CLASSIFICATION_TASKS
+from instruction_tuning.benchmark_record import TDC_ADMET_BENCHMARK_REG, TDC_ADMET_BENCHMARK_CLS, Tx_LLM_TDC_ADMET_result, \
+    result_best_ruleof5, result_best
+from instruction_tuning.instruction_prompt import CLASSIFICATION_TASKS
 
 
 def get_rank(dataset_name, new_res, benchmark=TDC_ADMET_BENCHMARK_REG, greater_better=False):
@@ -113,7 +113,7 @@ spearman_tasks = ["vdss_lombardo", "half_life_obach", "clearance_microsome_az", 
 
 model_name = "ADMET_reg_clsv1_all_five_shot_checkpoint-500"
 ranking_dict = {}
-for dataset, results_all in result_best_ruleof5.items():
+for dataset, results_all in result_best.items():
     if dataset in spearman_tasks + CLASSIFICATION_TASKS:
         greater_better = True
     else:
@@ -137,7 +137,7 @@ print(ranking_dict)
 import seaborn as sns
 import matplotlib.pyplot as plt
 from instruction_prompt import CLASSIFICATION_TASKS, REGRESSION_TASKS
-from benchmark_record import result_dict_cls
+from instruction_tuning.benchmark_record import result_dict_cls
 
 available_models = ['ADMET_reg_cls_all_mixed_shot_checkpoint-500', 'ADMET_regression_all_five_shot_5epoch', 'Llama3',
                     'ADMET_reg_cls_all_zero_shot_checkpoint-500', 'ADMET_regression_all_zero_shot_10epoch',
@@ -217,8 +217,9 @@ for dataset in CLASSIFICATION_TASKS:
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from benchmark_record import BENCHMARK_ALL, TDC_ADMET_BENCHMARK_REG, TDC_ADMET_BENCHMARK_CLS, Llama_prompting_result, \
-    Tx_LLM_TDC_ADMET_result
+from instruction_tuning.benchmark_record import BENCHMARK_ALL, TDC_ADMET_BENCHMARK_REG, TDC_ADMET_BENCHMARK_CLS, \
+    Llama_prompting_result, \
+    Tx_LLM_TDC_ADMET_result, result_best
 
 benchmark_record = {}
 for dataset, cur_dict in BENCHMARK_ALL.items():
@@ -234,6 +235,7 @@ color_map = {
     "Llama3": "red",
     "ADMET_cls_two_shot_checkpoint-400": "purple",
     "ADMET_cls_five_shot_checkpoint-400": "purple",
+    "ADMET_reg_clsv1_all_five_shot_checkpoint-500": "blue",
     "ADMET_reg_cls_all_mixed_shot_checkpoint-500": "blue",
     "ADMET_reg_cls_all_zero_shot_checkpoint-500": "blue",
     "ADMET_reg_cls_all_five_shot_checkpoint-400": "blue",
@@ -249,6 +251,7 @@ label_map = {
     "Llama3": "Llama3",
     "ADMET_cls_two_shot_checkpoint-400": "cls 2-shot",
     "ADMET_cls_five_shot_checkpoint-400": "cls 5-shot",
+    "ADMET_reg_clsv1_all_five_shot_checkpoint-500": "reg_clsv1 5-shot",
     "ADMET_reg_cls_all_mixed_shot_checkpoint-500": "reg+cls hybrid",
     "ADMET_reg_cls_all_zero_shot_checkpoint-500": "reg+cls 0-shot",
     "ADMET_reg_cls_all_five_shot_checkpoint-400": "reg+cls 5-shot",
@@ -264,6 +267,7 @@ marker_map = {
     "Llama3": "s",
     "ADMET_cls_two_shot_checkpoint-400": "p",
     "ADMET_cls_five_shot_checkpoint-400": "*",
+    "ADMET_reg_clsv1_all_five_shot_checkpoint-500": "*",
     "ADMET_reg_cls_all_mixed_shot_checkpoint-500": "o",
     "ADMET_reg_cls_all_zero_shot_checkpoint-500": "+",
     "ADMET_reg_cls_all_five_shot_checkpoint-400": "*",
@@ -280,7 +284,7 @@ marker_map = {
 fig, ax = plt.subplots(2, 1, figsize=(12, 8))
 counter = 0
 for metric, results in benchmark_record.items():
-    if metric not in ["MAE", "Spearman"]:
+    if metric in ["MAE", "Spearman"]:
         y_value = 1
         labels = {}
         for result in results:
@@ -288,12 +292,9 @@ for metric, results in benchmark_record.items():
                 labels[y_value] = result["dataset"]
                 ax[counter].scatter(result["value"], [y_value] * len(result["value"]), color="g", alpha=0.3)
                 # 07.28
-                cur_result = result_dict_cls[result["dataset"]]
-
+                cur_result = result_best[result["dataset"]]
                 for i in range(len(task_list)):
-
                     for model in model_list:
-                        print(model, color_map[model])
                         ax[counter].scatter([cur_result[model][task_list[i]]], [y_value], color=color_map[model],
                                             marker=marker_map[model], alpha=0.8, label=label_map[model])
                 ax[counter].scatter(Tx_LLM_TDC_ADMET_result[result["dataset"]], [y_value], color="black", alpha=1.0,
@@ -301,9 +302,9 @@ for metric, results in benchmark_record.items():
 
                 # add similarity-based ruleof5 prompting result:
                 our_value = Llama_prompting_result[result["dataset"]][2]
-                for k, v in our_value.items():
-                    ax[counter].scatter(v[metric], y_value, color="purple", marker="*",
-                                        alpha=0.5, label="Llama3 2-shot-similarity-ruleof5")
+                # for k, v in our_value.items():
+                #     ax[counter].scatter(v[metric], y_value, color="purple", marker="*",
+                #                         alpha=0.5, label="Llama3 2-shot-similarity-ruleof5")
 
                 y_value += 1
         # ax[counter].legend()
@@ -313,4 +314,3 @@ for metric, results in benchmark_record.items():
         counter += 1
 plt.tight_layout()
 plt.show()
-
